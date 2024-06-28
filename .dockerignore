@@ -1,0 +1,11 @@
+venv/
+Dockerfile
+api/__pycache__
+__pycache__
+build_and_push.sh
+test_endpoint.py
+*.jpg
+*.jpeg
+*.png
+
+
