@@ -4,7 +4,7 @@ from typing import List
 from PIL import Image
 from typing import List
 import io
-from settings import MODEL_PATH, MODEL_THRESHOLD, IOU_THRESHOLD
+from .settings import *
 
 app = FastAPI()
 
@@ -13,12 +13,7 @@ DEFAULT_CLASSES = model.names
 
 
 @app.post("/predict/")
-async def predict(
-    classes: List[str] = [],
-    file: UploadFile = File(...),
-    iou: float = IOU_THRESHOLD,
-    conf: float = MODEL_THRESHOLD,
-):
+async def predict(classes: List[str] = [], file: UploadFile = File(...), iou:float = IOU_THRESHOLD, conf:float = MODEL_THRESHOLD):
     image = Image.open(io.BytesIO(await file.read()))
 
     if len(classes) == 1:
@@ -27,13 +22,13 @@ async def predict(
 
     # Check if classes is not empty after processing
     if classes:
-        model.set_classes(tuple(classes))
+        model.set_classes(classes)
     else:
         classes = DEFAULT_CLASSES
 
     try:
         # Execute inference with the YOLOv8s-world model on the uploaded image
-        results = model.predict(image, conf=conf, iou=iou)
+        results = model.predict(image, conf= conf, iou = iou)
         # Convert the prediction results to a list of dictionaries
         predictions = []
         for res in results[0].boxes:
@@ -56,4 +51,4 @@ async def predict(
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=7000)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
